@@ -30,6 +30,7 @@ Any other key = Stop
 // #include <Tone32.h>   // Only needed for ESP32.
 #include <DTMF.h>
 #include "pitches.h"
+#include "alphabet.h"
 #include "Timer.h"
 
 
@@ -68,51 +69,6 @@ bool        beaconEnabled   { false };
 const int   dotDuration     { 60 };         // Length of time for one dot. Basic unit of measurement. 
 M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
 
-// Morse code definition.
-String alphabet = "abcdefghijklmnopqrstuvwxyz1234567890/ ";
-String ALPHABET = alphabet;
-
-String morseCode[] = { 
-    ".-",       // A
-    "-...",     // B
-    "-.-.",     // C
-    "-..",      // D
-    ".",        // E
-    "..-.",     // F
-    "--.",      // G
-    "....",     // H
-    "..",       // I
-    ".---",     // J
-    "-.-",      // K
-    ".-..",     // L
-    "--",       // M
-    "-.",       // N
-    "---",      // O
-    ".--.",     // P
-    "--.-",     // Q
-    ".-.",      // R
-    "...",      // S
-    "-",        // T
-    "..-",      // U
-    "...-",     // V
-    ".--",      // W
-    "-..-",     // X
-    "-.--",     // Y
-    "--..",     // Z
-    ".----",    // 1
-    "..---",    // 2
-    "...--",    // 3
-    "....-",    // 4
-    ".....",    // 5
-    "-....",    // 6
-    "--...",    // 7
-    "---..",    // 8
-    "----.",    // 9
-    "-----",    // 0
-    "-..-.",    // forward slash
-    " "         //space character
-};
-
 
 
 
@@ -131,6 +87,7 @@ void loop() {
 
     switch (state) {
         case State::WAIT:
+        {
             // Always check to see if it is time to do beacon stuff.
             if (beaconEnabled && timerBeacon.isTimerExpired()) {
                 state = State::BEACON;
@@ -170,9 +127,10 @@ void loop() {
             }
 
             break;
-
+        }
 
         case State::BEACON:
+        {
             // If beaconEnabled is false then bail out of this state and go back to WAIT.
             if (!beaconEnabled) {
                 state = State::WAIT;
@@ -190,13 +148,15 @@ void loop() {
             // Restart the timer for the next beacon cycle.
             timerBeacon.reset();
             break;
-
+        }
 
         default:
+        {
             // Strange state condition. Make everything safe.
             state = State::WAIT;
             beaconEnabled = false;
             break;
+        }
 
     }
 }
@@ -249,7 +209,7 @@ void playMelody() {
  * @param msg The alphanumeric char string to send.
  */
 void sendMessage(const char* msg) {
-    for (int i = 0; i < sizeof(msg); i++){
+    for (unsigned int i = 0; i < sizeof(msg); i++){
         sendCharacter(msg[i]);
     }
 }
@@ -261,14 +221,12 @@ void sendMessage(const char* msg) {
  * @param c The alphanumeric character to send.
  */
 void sendCharacter(const char c) {
-    for (int i = 0; i < alphabet.length(); i = i + 1) {
+    for (unsigned int i = 0; i < alphabet.length(); i = i + 1) {
         if (alphabet[i] == c || ALPHABET[i] == c) {
             sendMorseCode(morseCode[i]);
             return;
         }
     }
-    //    if (c == '\n')
-    //       Serial.println();
 }
 
 
@@ -278,7 +236,7 @@ void sendCharacter(const char c) {
  * @param tokens A string of Morse Code "tokens". This is a sequence of dot(s) and dash(es) which represent a Morse Code letter.
  */
 void sendMorseCode(String tokens) {
-   for (int i = 0; i < tokens.length(); i = i + 1) {
+   for (unsigned int i = 0; i < tokens.length(); i = i + 1) {
        switch (tokens[i]) {
            case '-':
                sendDash();

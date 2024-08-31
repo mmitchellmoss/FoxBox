@@ -1,3 +1,7 @@
+# IDE Related
+.pio 
+.vscode
+
 # Prerequisites
 *.d
 

@@ -1,28 +1,12 @@
 /* 
-Arduino controlled Fox Hunting Xmtr and/or Beacon.
-Code cobbled together from various sources.
-http://ttg.org.au/arduino_fox.php
-http://www.wt4y.com/arduino-fox-controller
-http://www.wcar.ca/photo-gallery/fox-tx/
-
-Pin A0 is the input for DTMF, see pic for pin out.
-Pin 5 is the square wave output for the Morse Code, see pic for pin out.
-Pin 7 is Push to Talk pin (low = engage relay for PTT).
-
-Using your DTMF 
-1 = Start
-5 = hi in morse code
-6 = Call sign you entered
-7 = 73
-Any other key = Stop
-*/
-
-
-/* To Do
+*  To Do
 *  Make time between beacons optionally random.
 *  Change time between beacons updatable programatically via DTMF.
 *  Add a repeat count parameter to sendMessage to automatically repeat the message x number of times.
 *  Maybe switch to dash duration, end of word duration, etc.
+*  Possibly integrate a .mp3 player for pre-recorded audio.
+*  Add a switch to force booting into the beaconEnabled = true condition.
+*  Add some LED(s) to indicate statuses.
 */
 
 

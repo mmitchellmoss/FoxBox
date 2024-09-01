@@ -35,6 +35,7 @@ Any other key = Stop
 
 
 // Function declarations.
+char getDtmfChar();
 void playMelody();
 void sendMessage(const char* msg);
 void sendCharacter(const char c);
@@ -95,12 +96,10 @@ void loop() {
             }
 
             // Check for DTMF tone and do something with it if one exists.
-            dtmf.sample(PIN_DTMF);
-            dtmf.detect(d_mags, ADC_BITDEPTH);
-            char thischar = dtmf.button(d_mags, 1800.);
+            char thisDtmfChar = getDtmfChar();
 
-            if (thischar) {                             
-                switch (thischar) {
+            if (thisDtmfChar) {                             
+                switch (thisDtmfChar) {
                     case 49:  // Number 1                   // Enables beacon transmission.
                         beaconEnabled = true;                           
                         state = State::BEACON;
@@ -180,6 +179,18 @@ void loop() {
 /////////////////////////////////////////////////////////
 //                     FUNCTIONS                       //
 /////////////////////////////////////////////////////////
+
+/**
+ * @brief  Checks to see if there is a DTMF signal on the input pin.
+ * @return Retuns the character number representing the DTMF buttoon presssed.
+ */
+char getDtmfChar() {
+    dtmf.sample(PIN_DTMF);
+    dtmf.detect(d_mags, ADC_BITDEPTH);
+    return dtmf.button(d_mags, 1800.);
+}
+
+
 
 /**
  * @brief Sends the fox hunt melody.

@@ -147,6 +147,7 @@ void loop() {
 
             // Restart the timer for the next beacon cycle.
             timerBeacon.reset();
+            state = State::WAIT;
             break;
         }
 

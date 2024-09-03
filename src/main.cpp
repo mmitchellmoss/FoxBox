@@ -30,11 +30,22 @@ void sendDash();
 void morseToneWait(const int n);
 void enablePTT();
 void disablePTT();
+bool ledsEnabled();
+bool speakerEnabled();
+bool isDefaultBeaconOn();
+void ledRedOn();
+void ledRedOff();
+void ledYellowOn();
+void ledYellowOff();
+void ledBlueOn();
+void ledBlueOff();
+void ledTest();
 
 
 // General configuration.
-const int   PIN_PTT         { 7 };          // Pin for Push to talk relay.
-const int   PIN_BUZZER      { 5 };          // Send music and CW out this pin.
+const int   PIN_PTT         { 6 };          // Pin for Push to talk relay.
+const int   PIN_BUZZER      { 7 };          // Send music and CW out this pin to the buzzer.
+const int   PIN_XMIT        { 2 };          // Send music and CW out this pin to the mic of the transceiver.
 const int   CW_FREQ         { 700 };        // CW pitch.
 const int   ADC_BITDEPTH    { 1024 };       // Number of discrete reading the controllers ADC can distinguish. 
 const char  beaconString[]   = "KI4OOK/FOX KI4OOK/FOX"; 
@@ -50,19 +61,52 @@ float       d_mags[8];                      // Array for DTMF magnitude readings
 DTMF        dtmf(dtmfBlockSize, dtmfSampleRate);
 
 // Transmission related.
-bool        beaconEnabled   { false }; 
+bool        beaconEnabled   { false };      // Keeps track of whether the beacon is enabled or not.
 const int   dotDuration     { 60 };         // Length of time for one dot. Basic unit of measurement. 
+const unsigned int xmitInterval { 20000 };  // Length of time between beacon intervals.
 M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
 
+// LED configuration.
+const int   PIN_LED_R       { 5 };          // Pin to the red LED.
+const int   PIN_LED_Y       { 3 };          // Pin to the yellow LED.
+const int   PIN_LED_B       { 4 };          // Pin to the blue LED.
+
+// Switch configuration.
+const int   PIN_SW_BEACON   { 8 };          // Pin to the default beacon enabled state switch.
+const int   PIN_SW_LEDS     { 9 };          // Pin to the LEDs enabled switch.
+const int   PIN_SW_SPEAKER  { 10 };         // Pin to the speaker enabled switch.
 
 
 
 void setup() {
+    pinMode(PIN_SW_BEACON, INPUT_PULLUP);
+    pinMode(PIN_SW_LEDS, INPUT_PULLUP);
+    pinMode(PIN_SW_SPEAKER, INPUT_PULLUP);
+    
+    pinMode(PIN_LED_R, OUTPUT);
+    pinMode(PIN_LED_B, OUTPUT);
+    pinMode(PIN_LED_Y, OUTPUT);
     pinMode(PIN_PTT, OUTPUT);
+    pinMode(PIN_BUZZER, OUTPUT);
+
+    ledRedOff();
+    ledBlueOff();
+    ledYellowOff();
     disablePTT();
   
     ALPHABET.toUpperCase();
     randomSeed(analogRead(0));  // In case random delays between transmissions are used.
+
+    beaconEnabled = isDefaultBeaconOn();
+    timerBeacon.setDuration(xmitInterval);
+    timerBeacon.start();
+
+    // TODO: Delete this stuff.
+    beaconEnabled = true;
+    state = State::BEACON;
+
+    // TODO: Wrap this in a switch check.
+    ledTest();
 }
 
 
@@ -80,7 +124,10 @@ void loop() {
             }
 
             // Check for DTMF tone and do something with it if one exists.
-            char thisDtmfChar = getDtmfChar();
+            //char thisDtmfChar = getDtmfChar();
+
+            // TODO: Delete this line and uncomment out the one above.
+            char thisDtmfChar = 0;
 
             if (thisDtmfChar) {                             
                 switch (thisDtmfChar) {
@@ -112,6 +159,8 @@ void loop() {
             break;
         }
 
+        
+        
         case State::BEACON:
         {
             // If beaconEnabled is false then bail out of this state and go back to WAIT.
@@ -205,7 +254,7 @@ void playMelody() {
  * @param msg The alphanumeric char string to send.
  */
 void sendMessage(const char* msg) {
-    for (unsigned int i = 0; i < sizeof(msg); i++){
+    for (unsigned int i = 0; i < strlen(msg); i++){
         sendCharacter(msg[i]);
     }
 }
@@ -310,7 +359,8 @@ void morseToneWait(const int n) {
  * @brief Enables the Push-to-talk pin/relay.
  */
 void enablePTT() {
-    digitalWrite(PIN_PTT, LOW);
+    digitalWrite(PIN_PTT, HIGH);
+    if (ledsEnabled()) ledRedOn();
     delay(2000);
 }
 
@@ -320,6 +370,129 @@ void enablePTT() {
  * @brief Disables the Push-to-talk pin/relay.
  */
 void disablePTT() {
-    digitalWrite(PIN_PTT, HIGH);
+    digitalWrite(PIN_PTT, LOW);
+    ledRedOff();
     delay(2000);
+}
+
+
+
+/**
+ * @brief Used to determine if the LEDs are enabled or not.
+ * @return Are the LEDs enabled or not.
+ */
+bool ledsEnabled() {
+    int val = digitalRead(PIN_SW_LEDS);
+
+    // TODO: Delete this line.
+    val = true;
+
+    if (val) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
+/**
+ * @brief Used to determine if the speaker is enabled or not.
+ * @return Is the speaker enabled or not.
+ */
+bool speakerEnabled() {
+    int val = digitalRead(PIN_SW_SPEAKER);
+    if (val == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
+/**
+ * @brief Used to determine if the default beacon switch is on or off.
+ * @return Boolean value whether the default beacon switch is on or off.
+ */
+bool isDefaultBeaconOn() {
+        int val = digitalRead(PIN_SW_BEACON);
+    if (val == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
+/**
+ * @brief Turns the red LED on.
+ */
+void ledRedOn() {
+    digitalWrite(PIN_LED_R, LOW);
+}
+
+
+
+/**
+ * @brief Turns the red LED off.
+ */
+void ledRedOff() {
+    digitalWrite(PIN_LED_R, HIGH);
+}
+
+
+
+/**
+ * @brief Turns the Yellow LED off.
+ */
+void ledYellowOn() {
+    digitalWrite(PIN_LED_Y, LOW);
+}
+
+
+
+/**
+ * @brief Turns the Yellow LED off.
+ */
+void ledYellowOff() {
+    digitalWrite(PIN_LED_Y, HIGH);
+}
+
+
+
+/**
+ * @brief Turns the blue LED on.
+ */
+void ledBlueOn() {
+    digitalWrite(PIN_LED_B, LOW);
+}
+
+
+
+/**
+ * @brief Turns the blue LED off.
+ */
+void ledBlueOff() {
+    digitalWrite(PIN_LED_B, HIGH);
+}
+
+
+
+/**
+ * @brief Performs an LED test by sequencing through the LEDs.
+ */
+void ledTest() {
+    ledRedOn();
+        delay(700);
+    ledBlueOn();
+        delay(700);
+    ledYellowOn();
+        delay(2000);
+    ledRedOff();
+        delay(700);
+    ledBlueOff();
+        delay(700);
+    ledYellowOff();
 }

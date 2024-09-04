@@ -5,8 +5,6 @@
 *  Add a repeat count parameter to sendMessage to automatically repeat the message x number of times.
 *  Maybe switch to dash duration, end of word duration, etc.
 *  Possibly integrate a .mp3 player for pre-recorded audio.
-*  Add a switch to force booting into the beaconEnabled = true condition.
-*  Add some LED(s) to indicate statuses.
 */
 
 
@@ -16,6 +14,7 @@
 #include "pitches.h"
 #include "alphabet.h"
 #include "Timer.h"
+#include "Switch.h"
 
 
 // Function declarations.
@@ -63,7 +62,7 @@ DTMF        dtmf(dtmfBlockSize, dtmfSampleRate);
 // Transmission related.
 bool        beaconEnabled   { false };      // Keeps track of whether the beacon is enabled or not.
 const int   dotDuration     { 60 };         // Length of time for one dot. Basic unit of measurement. 
-const unsigned int xmitInterval { 20000 };  // Length of time between beacon intervals.
+const unsigned long xmitInterval { 20 * 1000 };  // Length of time between beacon intervals.
 M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
 
 // LED configuration.
@@ -72,9 +71,10 @@ const int   PIN_LED_Y       { 3 };          // Pin to the yellow LED.
 const int   PIN_LED_B       { 4 };          // Pin to the blue LED.
 
 // Switch configuration.
-const int   PIN_SW_BEACON   { 8 };          // Pin to the default beacon enabled state switch.
+const int   PIN_SW_BEACON   { 8 };          // Pin to force beacon state switch.
 const int   PIN_SW_LEDS     { 9 };          // Pin to the LEDs enabled switch.
 const int   PIN_SW_SPEAKER  { 10 };         // Pin to the speaker enabled switch.
+M3::Switch  switchBeacon(LOW, PIN_SW_BEACON);
 
 
 
@@ -88,25 +88,22 @@ void setup() {
     pinMode(PIN_LED_Y, OUTPUT);
     pinMode(PIN_PTT, OUTPUT);
     pinMode(PIN_BUZZER, OUTPUT);
+    pinMode(PIN_XMIT, OUTPUT);
 
     ledRedOff();
     ledBlueOff();
     ledYellowOff();
     disablePTT();
   
-    ALPHABET.toUpperCase();
+    ALPHABET.toUpperCase();     // Make ALPHABET actually contain upper case characters.
     randomSeed(analogRead(0));  // In case random delays between transmissions are used.
 
-    beaconEnabled = isDefaultBeaconOn();
+    if (ledsEnabled()) {
+        ledTest();
+    }
+
     timerBeacon.setDuration(xmitInterval);
     timerBeacon.start();
-
-    // TODO: Delete this stuff.
-    beaconEnabled = true;
-    state = State::BEACON;
-
-    // TODO: Wrap this in a switch check.
-    ledTest();
 }
 
 
@@ -118,7 +115,8 @@ void loop() {
         case State::WAIT:
         {
             // Always check to see if it is time to do beacon stuff.
-            if (beaconEnabled && timerBeacon.isTimerExpired()) {
+            if ((beaconEnabled && timerBeacon.isTimerExpired()) || switchBeacon.isSwitchPressed()) {
+                beaconEnabled = true;
                 state = State::BEACON;
                 break;
             }
@@ -229,14 +227,16 @@ char getDtmfChar() {
  * @brief Sends the fox hunt melody.
  */
 void playMelody() {
-    // Melody related.
     int melody[] = { NOTE_G4, NOTE_E4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_F4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_E4 };
     int noteDurations[] = { 8, 8, 4, 4, 8, 8, 8, 8, 4, 4, 4, 4 }; // 4 = quarter note, 8 = eighth note, etc.
     int noteSize = sizeof(melody)/sizeof(*melody);
 
     for (int thisNote = 0; thisNote < noteSize; thisNote++) {
         int noteDuration = 1000 / noteDurations[thisNote];
-        tone(PIN_BUZZER, melody[thisNote], noteDuration);
+        if (speakerEnabled()) {
+            tone(PIN_BUZZER, melody[thisNote], noteDuration);
+        }
+        if (ledsEnabled()) ledBlueOn();
 
         // To distinguish the notes, set a minimum time between them. The note's duration + 30% seems to work well.
         int pauseBetweenNotes = noteDuration * 1.30;
@@ -244,6 +244,7 @@ void playMelody() {
 
         // stop the tone playing:
         noTone(PIN_BUZZER);
+        ledBlueOff();
     }
 }
 
@@ -307,6 +308,7 @@ void sendMorseCode(String tokens) {
 void sendEndOfWord() {
     // Send a silent pause to signify the end of a word.
     noTone(PIN_BUZZER);
+    ledYellowOff();
     morseToneWait(4);
 }
 
@@ -317,11 +319,15 @@ void sendEndOfWord() {
  */
 void sendDot() {
     // Send the dot.
-    tone(PIN_BUZZER, CW_FREQ);
+    if (speakerEnabled()) {
+        tone(PIN_BUZZER, CW_FREQ);
+    }
+    if (ledsEnabled()) ledYellowOn();
     morseToneWait(1);
 
     // Send the silent pause after the dot.
     noTone(PIN_BUZZER);
+    ledYellowOff();
     morseToneWait(1);
 }
 
@@ -332,11 +338,15 @@ void sendDot() {
  */
 void sendDash() {
     // Send the dash.
-    tone(PIN_BUZZER, CW_FREQ);
+    if (speakerEnabled()) {
+        tone(PIN_BUZZER, CW_FREQ);
+    }
+    if (ledsEnabled()) ledYellowOn();
     morseToneWait(3);
 
     // Send the silent pause after the dash.
     noTone(PIN_BUZZER);
+    ledYellowOff();
     morseToneWait(1);
 }
 
@@ -384,10 +394,7 @@ void disablePTT() {
 bool ledsEnabled() {
     int val = digitalRead(PIN_SW_LEDS);
 
-    // TODO: Delete this line.
-    val = true;
-
-    if (val) {
+    if (val == 0) {
         return true;
     } else {
         return false;
@@ -416,7 +423,7 @@ bool speakerEnabled() {
  * @return Boolean value whether the default beacon switch is on or off.
  */
 bool isDefaultBeaconOn() {
-        int val = digitalRead(PIN_SW_BEACON);
+    int val = digitalRead(PIN_SW_BEACON);
     if (val == 0) {
         return true;
     } else {

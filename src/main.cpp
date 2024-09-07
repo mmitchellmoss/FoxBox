@@ -30,7 +30,6 @@ void morseToneWait(const int n);
 void enablePTT();
 void disablePTT();
 bool areLEDsEnabled();
-bool isSpeakerEnabled();
 void ledRedOn();
 void ledRedOff();
 void ledYellowOn();
@@ -42,7 +41,6 @@ void ledTest();
 
 // General configuration.
 const int   PIN_PTT         { 6 };          // Pin for Push to talk relay.
-const int   PIN_SPEAKER     { 7 };          // Send music and CW out this pin to the speaker.
 const int   PIN_XMIT        { 2 };          // Send music and CW out this pin to the mic of the transceiver.
 const int   CW_FREQ         { 700 };        // CW pitch.
 const int   ADC_BITDEPTH    { 1024 };       // Number of discrete reading the controllers ADC can distinguish. 
@@ -73,7 +71,6 @@ const int   PIN_LED_B       { 4 };          // Pin to the blue LED.
 // Switch configuration.
 const int   PIN_SW_BEACON   { 8 };          // Pin to force beacon state switch.
 const int   PIN_SW_LEDS     { 9 };          // Pin to the LEDs enabled switch.
-const int   PIN_SW_SPEAKER  { 10 };         // Pin to the speaker enabled switch.
 M3::Switch  switchBeacon(LOW, PIN_SW_BEACON);
 
 
@@ -81,13 +78,11 @@ M3::Switch  switchBeacon(LOW, PIN_SW_BEACON);
 void setup() {
     pinMode(PIN_SW_BEACON, INPUT_PULLUP);
     pinMode(PIN_SW_LEDS, INPUT_PULLUP);
-    pinMode(PIN_SW_SPEAKER, INPUT_PULLUP);
     
     pinMode(PIN_LED_R, OUTPUT);
     pinMode(PIN_LED_B, OUTPUT);
     pinMode(PIN_LED_Y, OUTPUT);
     pinMode(PIN_PTT, OUTPUT);
-    pinMode(PIN_SPEAKER, OUTPUT);
     pinMode(PIN_XMIT, OUTPUT);
 
     ledRedOff();
@@ -229,16 +224,18 @@ char getDtmfChar() {
  * @brief Sends the fox hunt melody.
  */
 void playMelody() {
-    int melody[] = { NOTE_G4, NOTE_E4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_F4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_E4 };
-    int noteDurations[] = { 8, 8, 4, 4, 8, 8, 8, 8, 4, 4, 4, 4 }; // 4 = quarter note, 8 = eighth note, etc.
+    // Warble, siren, or something.
+    int melody[] = { NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6 };
+    int noteDurations[] = { 8, 8, 8, 8, 8, 8, 8, 8 };
+
+    // Dixie
+    // int melody[] = { NOTE_G4, NOTE_E4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_F4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_E4 };
+    // int noteDurations[] = { 8, 8, 4, 4, 8, 8, 8, 8, 4, 4, 4, 4 }; // 4 = quarter note, 8 = eighth note, etc.
     int noteCount = sizeof(melody)/sizeof(*melody);
 
     for (int thisNote = 0; thisNote < noteCount; thisNote++) {
         int noteDuration = 1000 / noteDurations[thisNote];
         tone(PIN_XMIT, melody[thisNote], noteDuration);
-        if (isSpeakerEnabled()) {
-            tone(PIN_SPEAKER, melody[thisNote], noteDuration);
-        }
         if (areLEDsEnabled()) ledBlueOn();
 
         // To distinguish the notes, set a minimum time between them. The note's duration + 30% seems to work well.
@@ -247,7 +244,6 @@ void playMelody() {
 
         // Stop the tone playing:
         noTone(PIN_XMIT);
-        noTone(PIN_SPEAKER);
         ledBlueOff();
     }
 }
@@ -312,7 +308,6 @@ void sendMorseCode(String tokens) {
 void sendEndOfWord() {
     // Send a silent pause to signify the end of a word.
     noTone(PIN_XMIT);
-    noTone(PIN_SPEAKER);
     ledYellowOff();
     morseToneWait(4);
 }
@@ -325,15 +320,11 @@ void sendEndOfWord() {
 void sendDot() {
     // Send the dot.
     tone(PIN_XMIT, CW_FREQ);
-    if (isSpeakerEnabled()) {
-        tone(PIN_SPEAKER, CW_FREQ);
-    }
     if (areLEDsEnabled()) ledYellowOn();
     morseToneWait(1);
 
     // Send the silent pause after the dot.
     noTone(PIN_XMIT);
-    noTone(PIN_SPEAKER);
     ledYellowOff();
     morseToneWait(1);
 }
@@ -346,15 +337,11 @@ void sendDot() {
 void sendDash() {
     // Send the dash.
     tone(PIN_XMIT, CW_FREQ);
-    if (isSpeakerEnabled()) {
-        tone(PIN_SPEAKER, CW_FREQ);
-    }
     if (areLEDsEnabled()) ledYellowOn();
     morseToneWait(3);
 
     // Send the silent pause after the dash.
     noTone(PIN_XMIT);
-    noTone(PIN_SPEAKER);
     ledYellowOff();
     morseToneWait(1);
 }
@@ -403,21 +390,6 @@ void disablePTT() {
 bool areLEDsEnabled() {
     int val = digitalRead(PIN_SW_LEDS);
 
-    if (val == 0) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-
-
-/**
- * @brief Used to determine if the speaker is enabled or not.
- * @return Is the speaker enabled or not.
- */
-bool isSpeakerEnabled() {
-    int val = digitalRead(PIN_SW_SPEAKER);
     if (val == 0) {
         return true;
     } else {

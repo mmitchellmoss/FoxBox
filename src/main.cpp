@@ -5,7 +5,21 @@
 *  Add a repeat count parameter to sendMessage to automatically repeat the message x number of times.
 *  Maybe switch to dash duration, end of word duration, etc.
 *  Possibly integrate a .mp3 player for pre-recorded audio.
-*  Possibly add a physical switch for setting melodyEnabled.
+*  Maybe add back the buzzer/speaker for local sound. I couldn't do this as a seperate digital out as the 
+*       tone() function built into the Ardunio library does not allow tone() to work on more than one pin
+*       at a time. I could possibly add it back by including a SPDT switch that sends the audio either to the
+*       speaker or to the mic in on the HT, thus bypassing the Arduino entirely.
+* 
+*  Notes
+*  The DTMF class apparently uses pin 4 for something, some kind of calculations or something. I have no idea.
+*       Basically, this means that you don't seem to be able to use pin 4 for anything. 
+*       You just need to leave it empty.
+*  Oddly to me, you also don't need a common ground between the Arduino and the mic or speaker pins on the radio.
+*       Electrically, I don't know how this works, but it kind of does. However, the transmitted audio volume varies a lot
+*       depending on how the audio and mic wire are located in proximity to each other. I have found that grounding
+*       the sleeve of the audio/speaker plug (blue wire) seems to clear that up. In this case the speaker which is 
+*       active and being monitored during the wait state looking for DTMF signals has a ground which is cool. Also, when 
+*       the PTT relay is engaged, it then also grounds the mic input which seems to clear up the transmitted audio.
 */
 
 
@@ -30,6 +44,7 @@ void morseToneWait(const int n);
 void enablePTT();
 void disablePTT();
 bool areLEDsEnabled();
+bool isMelodyEnabled();
 void ledRedOn();
 void ledRedOff();
 void ledYellowOn();
@@ -37,15 +52,16 @@ void ledYellowOff();
 void ledBlueOn();
 void ledBlueOff();
 void ledTest();
+void ledAck();
 
 
 // General configuration.
-const int   PIN_PTT         { 6 };          // Pin for Push to talk relay.
-const int   PIN_XMIT        { 2 };          // Send music and CW out this pin to the mic of the transceiver.
-const int   CW_FREQ         { 700 };        // CW pitch.
-const int   ADC_BITDEPTH    { 1024 };       // Number of discrete reading the controllers ADC can distinguish. 
 const char  beaconString[]   = "KI4OOK TESTING KI4OOK TESTING"; 
 const char  idString[]       = "DE KI4OOK"; 
+const int   PIN_PTT         { 6 };          // Pin for Push to talk relay.
+const int   PIN_XMIT        { 2 };          // Send melody and CW out this pin to the mic of the transceiver.
+const int   CW_FREQ         { 700 };        // CW pitch.
+const int   ADC_BITDEPTH    { 1024 };       // Number of discrete reading the controller's ADC can distinguish. 
 enum  class State           { WAIT, BEACON };
 State  state = State::WAIT;
 
@@ -58,7 +74,6 @@ DTMF        dtmf(dtmfBlockSize, dtmfSampleRate);
 
 // Transmission related.
 bool        beaconEnabled   { false };      // Keeps track of whether the beacon is enabled or not.
-const bool  melodyEnabled   { false };      // Should we play a melody as part of the beacon transmission.
 const int   dotDuration     { 60 };         // Length of time for one dot. Basic unit of measurement. 
 const unsigned long xmitInterval { 20 * 1000 };  // Length of time between beacon intervals.
 M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
@@ -66,11 +81,12 @@ M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
 // LED configuration.
 const int   PIN_LED_R       { 5 };          // Pin to the red LED.
 const int   PIN_LED_Y       { 3 };          // Pin to the yellow LED.
-const int   PIN_LED_B       { 4 };          // Pin to the blue LED.
+const int   PIN_LED_B       { 7 };          // Pin to the blue LED.
 
 // Switch configuration.
-const int   PIN_SW_BEACON   { 8 };          // Pin to force beacon state switch.
-const int   PIN_SW_LEDS     { 9 };          // Pin to the LEDs enabled switch.
+const int   PIN_SW_BEACON   { 8 };          // Pin to force beacon state push button switch.
+const int   PIN_SW_LEDS     { 9 };          // Pin to the LEDs enabled toggle switch.
+const int   PIN_SW_MELODY   { 10 };         // Pin to the melody enabled toggle switch.
 M3::Switch  switchBeacon(LOW, PIN_SW_BEACON);
 
 
@@ -78,6 +94,7 @@ M3::Switch  switchBeacon(LOW, PIN_SW_BEACON);
 void setup() {
     pinMode(PIN_SW_BEACON, INPUT_PULLUP);
     pinMode(PIN_SW_LEDS, INPUT_PULLUP);
+    pinMode(PIN_SW_MELODY, INPUT_PULLUP);
     
     pinMode(PIN_LED_R, OUTPUT);
     pinMode(PIN_LED_B, OUTPUT);
@@ -117,35 +134,47 @@ void loop() {
             }
 
             // Check for DTMF tone and do something with it if one exists.
-            //char thisDtmfChar = getDtmfChar();
+            char thisDtmfChar = getDtmfChar();
 
-            // TODO: Delete this line and uncomment out the one above.
-            char thisDtmfChar = 0;
-
+            // The char is a decimal value from the ASCII character set.
             if (thisDtmfChar) {                             
                 switch (thisDtmfChar) {
                     case 49:  // Number 1                   // Enables beacon transmission.
+                    {   
                         beaconEnabled = true;                           
                         state = State::BEACON;
                         break;
+                    }
                     case 53:  // Number 5                   // Sends morse code for "hi".
+                    {   
                         enablePTT();
                         sendMessage("hi");
+                        delay(500);
                         disablePTT();
                         break;
+                    }
                     case 54:  // Number 6                   // Sends morse code with call sign. 
+                    {
                         enablePTT();
                         sendMessage(idString);
+                        delay(500);
                         disablePTT();
                         break;
+                    }
                     case 55:  // Number 7                   // Sends morse code saying "73".
+                    {
                         enablePTT();
                         sendMessage("73");
+                        delay(500);
                         disablePTT();
                         break;
+                    }
                     default:  // Any other number           // Turn off transmissions.
+                    {
                         beaconEnabled = false;  
+                        ledAck();
                         break;
+                    }
                 }
             }
 
@@ -164,7 +193,7 @@ void loop() {
 
             // Send the beacon.
             enablePTT();
-            if (melodyEnabled) {
+            if (isMelodyEnabled()) {
                 playMelody();
                 delay(1000);  
             }
@@ -225,8 +254,8 @@ char getDtmfChar() {
  */
 void playMelody() {
     // Warble, siren, or something.
-    int melody[] = { NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6 };
-    int noteDurations[] = { 8, 8, 8, 8, 8, 8, 8, 8 };
+    int melody[] = { NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6 };
+    int noteDurations[] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
 
     // Dixie
     // int melody[] = { NOTE_G4, NOTE_E4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_F4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_E4 };
@@ -400,6 +429,22 @@ bool areLEDsEnabled() {
 
 
 /**
+ * @brief Used to determine if the melody switch is enabled or not.
+ * @return Is the melody enabled or not.
+ */
+bool isMelodyEnabled() {
+    int val = digitalRead(PIN_SW_MELODY);
+
+    if (val == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
+/**
  * @brief Turns the red LED on.
  */
 void ledRedOn() {
@@ -459,13 +504,42 @@ void ledBlueOff() {
 void ledTest() {
     ledRedOn();
         delay(700);
+    ledRedOff();
     ledBlueOn();
         delay(700);
-    ledYellowOn();
-        delay(2000);
-    ledRedOff();
-        delay(700);
     ledBlueOff();
+    ledYellowOn();
         delay(700);
+    ledYellowOff();
+}
+
+
+
+/**
+ * @brief Blinks the LEDs repeatedly to give a visual indication of the beacon being disabled.
+ */
+void ledAck() {
+    ledRedOn();
+    ledBlueOn();
+    ledYellowOn();
+        delay(200);
+    ledRedOff();
+    ledBlueOff();
+    ledYellowOff();
+        delay(200);
+    ledRedOn();
+    ledBlueOn();
+    ledYellowOn();
+        delay(200);
+    ledRedOff();
+    ledBlueOff();
+    ledYellowOff();
+        delay(200);
+    ledRedOn();
+    ledBlueOn();
+    ledYellowOn();
+        delay(200);
+    ledRedOff();
+    ledBlueOff();
     ledYellowOff();
 }

@@ -1,5 +1,6 @@
 /* 
 *  To Do
+*  Make the ledAck function respect the position of the LED enabled switch.
 *  Make time between beacons optionally random.
 *  Change time between beacons updatable programatically via DTMF.
 *  Add a repeat count parameter to sendMessage to automatically repeat the message x number of times.
@@ -58,7 +59,7 @@ void ledAck();
 // General configuration.
 const char  beaconString[]   = "KI4OOK TESTING KI4OOK TESTING"; 
 const char  idString[]       = "DE KI4OOK"; 
-const int   PIN_PTT         { 6 };          // Pin for Push to talk relay.
+const int   PIN_PTT         { 3 };          // Pin for Push to talk relay.
 const int   PIN_XMIT        { 2 };          // Send melody and CW out this pin to the mic of the transceiver.
 const int   CW_FREQ         { 700 };        // CW pitch.
 const int   ADC_BITDEPTH    { 1024 };       // Number of discrete reading the controller's ADC can distinguish. 
@@ -79,14 +80,14 @@ const unsigned long xmitInterval { 20 * 1000 };  // Length of time between beaco
 M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
 
 // LED configuration.
-const int   PIN_LED_R       { 5 };          // Pin to the red LED.
-const int   PIN_LED_Y       { 3 };          // Pin to the yellow LED.
-const int   PIN_LED_B       { 7 };          // Pin to the blue LED.
+const int   PIN_LED_R       { 10 };         // Pin to the red LED.
+const int   PIN_LED_Y       { 8 };          // Pin to the yellow LED.
+const int   PIN_LED_B       { 9 };          // Pin to the blue LED.
 
 // Switch configuration.
-const int   PIN_SW_BEACON   { 8 };          // Pin to force beacon state push button switch.
-const int   PIN_SW_LEDS     { 9 };          // Pin to the LEDs enabled toggle switch.
-const int   PIN_SW_MELODY   { 10 };         // Pin to the melody enabled toggle switch.
+const int   PIN_SW_BEACON   { 7 };          // Pin to force beacon state push button switch.
+const int   PIN_SW_LEDS     { 5 };          // Pin to the LEDs enabled toggle switch.
+const int   PIN_SW_MELODY   { 6 };          // Pin to the melody enabled toggle switch.
 M3::Switch  switchBeacon(LOW, PIN_SW_BEACON);
 
 

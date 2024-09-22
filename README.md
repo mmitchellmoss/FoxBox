@@ -16,3 +16,5 @@ Gold:   Large   Mic         Sleeve
 
 
 ![Fox Box Schematic](https://github.com/user-attachments/assets/09bdead5-9cca-448e-bb17-bf2da77564a9)
+
+Schematic created on https://www.circuit-diagram.org/

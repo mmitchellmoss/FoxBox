@@ -8,10 +8,12 @@ Notes on the wires within the official Baofeng earphone.
 * Red and gold are the wires connected to the mic.
 
 Wire colors connected to the HT connector
-| Green  | Small   | Speaker     | Tip      |
-| Blue   | Small   | Speaker     | Sleeve   |
-| Red    | Large   | Mic         | Ring     |
-| Gold   | Large   | Mic         | Sleeve   |
+| Color  | Pin Size | Use         | Connection |
+| -----  | -----    | -----       | -----      |
+| Green  | Small    | Speaker     | Tip       |
+| Blue   | Small    | Speaker     | Sleeve    |
+| Red    | Large    | Mic         | Ring      |
+| Gold   | Large    | Mic         | Sleeve    |
 
 
 

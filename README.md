@@ -5,21 +5,19 @@ Controller for a "fox" radio transmitter.
 ### 2 Meter Frequency (VHF)
 I have found no really definitive information on the Internet regarding which 2 meter frequency is best to use for ARDF/Fox Hunting. Some of the suggestions or practices that I have found are as following:
 
-145.300 MHz (Someone claimed this is the national ARDF frequency, but I find no other reference to that)
-146.565 MHz (Found 7 times on the Internet)
-146.430 MHz (Found as secondary to 146.565 MHz)
-146.520 MHz (3rd harmonic receive frequency of 439.56MHz)
-146.535 MHz 
-146.550 MHz (Suggested use with a PL tone)
-145.565 MHz (Found as secondary to 146.565 MHz)
-147.550 MHz (Suggested use with a PL tone)
+145.300 MHz (Someone claimed this is the national ARDF frequency, but I find no other reference to that)  
+146.565 MHz (Found 7 times on the Internet)  
+146.430 MHz (Found as secondary to 146.565 MHz)  
+146.520 MHz (3rd harmonic receive frequency of 439.56MHz)  
+146.535 MHz   
+146.550 MHz (Suggested use with a PL tone)  
+145.565 MHz (Found as secondary to 146.565 MHz)  
+147.550 MHz (Suggested use with a PL tone)  
 146.580 MHz (3rd harmonic receive frequency of 439.740)
 
-So would recommend something in 144.1–144.5 Where all voice modes are allowed and there are no repeaters.
+**Stay away from 146.520 MHz**
 
-Stay away from 146.520 MHz
-
-Based on the collection of data above, it seems that 146.565 MHz is the most popular option.
+Based on the collection of data above, it seems that **146.565 MHz** is the most popular option.
 
 ### 70 CM Frequency (UHF)
 Any common simplex frequency other than 446.000.

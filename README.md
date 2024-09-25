@@ -23,10 +23,12 @@ Any common simplex frequency other than 446.000.
 446.0250 MHz would be fine
 
 ### Duty cycle (time transmitting vs. time silent)
-This varies depending on the desired difficulty of the hunt.
+This varies depending on the desired difficulty of the hunt.  
 For easy hunts more frequent transmissions are desirable, whereas for experts longer pauses with shorter transmissions
-    would be the way to go.
+    would be the way to go.  
 Right now I am thinking that transmissions of about 15 seconds with a 1 minute pause is where I will start.
+
+---
 
 ## Wiring the Baofeng transceiver
 Notes on the wires within the official Baofeng earphone (Kenwood style).
@@ -44,8 +46,7 @@ Wire colors connected to the HT connector
 
 ![Plug color code](https://github.com/user-attachments/assets/37c4ba3d-8209-4482-b44f-281adfa72733)
 
-
-
+---
 
 ## Schematic
 
@@ -61,6 +62,7 @@ the sleeve of the audio/speaker plug (blue wire) seems to clear that up. In this
 active and being monitored during the wait state looking for DTMF signals has a ground which is cool. Also, when 
 the PTT relay is engaged, it then also grounds the mic input which seems to clear up the transmitted audio.
 
+---
 
 ## To Do
 * Make the ledAck function respect the position of the LED enabled switch.

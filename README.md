@@ -67,7 +67,6 @@ the PTT relay is engaged, it then also grounds the mic input which seems to clea
 ---
 
 ## To Do
-* Make the ledAck function respect the position of the LED enabled switch.
 * Have an array of messages that can be transmitted either sequentially, randomly, or as time progresses.
     This could be just to spice things up, but it could also be to drop messages containing hints as 
     the duration of the hunt becomes longer and longer.

@@ -39,7 +39,7 @@ void ledAck();
 
 
 // General configuration.
-const char  beaconString[]   = "KI4OOK TESTING KI4OOK TESTING"; 
+const char  beaconString[]   = "KI4OOK/FOX"; 
 const char  idString[]       = "DE KI4OOK"; 
 const int   PIN_PTT         { 3 };          // Pin for Push to talk relay.
 const int   PIN_XMIT        { 2 };          // Send melody and CW out this pin to the mic of the transceiver.
@@ -58,7 +58,7 @@ DTMF        dtmf(dtmfBlockSize, dtmfSampleRate);
 // Transmission related.
 bool        beaconEnabled   { false };      // Keeps track of whether the beacon is enabled or not.
 const int   dotDuration     { 60 };         // Length of time for one dot. Basic unit of measurement. 
-const unsigned long xmitInterval { 20 * 1000 };  // Length of time between beacon intervals.
+const unsigned long xmitInterval { 60 * 1000 };  // Length of time between beacon intervals.
 M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
 
 // LED configuration.

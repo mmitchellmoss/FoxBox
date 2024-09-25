@@ -155,7 +155,9 @@ void loop() {
                     default:  // Any other number           // Turn off transmissions.
                     {
                         beaconEnabled = false;  
-                        ledAck();
+                        if (areLEDsEnabled()) {
+                            ledAck();
+                        }
                         break;
                     }
                 }

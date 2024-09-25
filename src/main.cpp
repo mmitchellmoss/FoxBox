@@ -1,26 +1,8 @@
 /* 
-*  To Do
-*  Make the ledAck function respect the position of the LED enabled switch.
-*  Make time between beacons optionally random.
-*  Change time between beacons updatable programatically via DTMF.
-*  Add a repeat count parameter to sendMessage to automatically repeat the message x number of times.
-*  Maybe switch to dash duration, end of word duration, etc.
-*  Possibly integrate a .mp3 player for pre-recorded audio.
-*  Maybe add back the buzzer/speaker for local sound. I couldn't do this as a seperate digital out as the 
-*       tone() function built into the Ardunio library does not allow tone() to work on more than one pin
-*       at a time. I could possibly add it back by including a SPDT switch that sends the audio either to the
-*       speaker or to the mic in on the HT, thus bypassing the Arduino entirely.
-* 
-*  Notes
-*  The DTMF class apparently uses pin 4 for something, some kind of calculations or something. I have no idea.
-*       Basically, this means that you don't seem to be able to use pin 4 for anything. 
-*       You just need to leave it empty.
-*  Oddly to me, you also don't need a common ground between the Arduino and the mic or speaker pins on the radio.
-*       Electrically, I don't know how this works, but it kind of does. However, the transmitted audio volume varies a lot
-*       depending on how the audio and mic wire are located in proximity to each other. I have found that grounding
-*       the sleeve of the audio/speaker plug (blue wire) seems to clear that up. In this case the speaker which is 
-*       active and being monitored during the wait state looking for DTMF signals has a ground which is cool. Also, when 
-*       the PTT relay is engaged, it then also grounds the mic input which seems to clear up the transmitted audio.
+* Notes
+* The DTMF class apparently uses pin 4 for something, some kind of calculations or something. I have no idea.
+*      Basically, this means that you don't seem to be able to use pin 4 for anything. 
+*      You just need to leave it empty.
 */
 
 

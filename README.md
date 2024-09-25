@@ -1,6 +1,8 @@
 # FoxBox
 Controller for a "fox" radio transmitter.
 
+---
+
 ## Usage
 ### 2 Meter Frequency (VHF)
 I have found no really definitive information on the Internet regarding which 2 meter frequency is best to use for ARDF/Fox Hunting. Some of the suggestions or practices that I have found are as following:

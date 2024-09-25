@@ -12,7 +12,6 @@ I have found no really definitive information on the Internet regarding which 2 
 146.535 MHz   
 146.550 MHz (Suggested use with a PL tone)  
 145.565 MHz (Found as secondary to 146.565 MHz)  
-147.550 MHz (Suggested use with a PL tone)  
 146.580 MHz (3rd harmonic receive frequency of 439.740)
 
 **Stay away from 146.520 MHz**

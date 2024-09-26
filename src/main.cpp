@@ -504,27 +504,17 @@ void ledTest() {
  * @brief Blinks the LEDs repeatedly to give a visual indication of the beacon being disabled.
  */
 void ledAck() {
-    ledRedOn();
-    ledBlueOn();
-    ledYellowOn();
-        delay(200);
-    ledRedOff();
-    ledBlueOff();
-    ledYellowOff();
-        delay(200);
-    ledRedOn();
-    ledBlueOn();
-    ledYellowOn();
-        delay(200);
-    ledRedOff();
-    ledBlueOff();
-    ledYellowOff();
-        delay(200);
-    ledRedOn();
-    ledBlueOn();
-    ledYellowOn();
-        delay(200);
-    ledRedOff();
-    ledBlueOff();
-    ledYellowOff();
+    const int blinks { 3 };     // How many times to blink the LEDs on and off.
+    const int pause { 200 };    // Millis to pause between state changes.
+
+    for (int i = 0; i < blinks; i++) {
+        ledRedOn();
+        ledBlueOn();
+        ledYellowOn();
+            delay(pause);
+        ledRedOff();
+        ledBlueOff();
+        ledYellowOff();
+            delay(pause);
+    }
 }

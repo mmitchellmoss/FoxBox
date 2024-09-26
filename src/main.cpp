@@ -58,7 +58,7 @@ DTMF        dtmf(dtmfBlockSize, dtmfSampleRate);
 // Transmission related.
 bool        beaconEnabled   { false };      // Keeps track of whether the beacon is enabled or not.
 const int   dotDuration     { 60 };         // Length of time for one dot. Basic unit of measurement. 
-const unsigned long xmitInterval { 60 * 1000 };  // Length of time between beacon intervals.
+const unsigned long xmitInterval { 60 * 1000UL };  // Length of time between beacon intervals.
 M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
 
 // LED configuration.

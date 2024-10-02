@@ -38,9 +38,20 @@ void ledTest();
 void ledAck();
 
 
-// General configuration.
+
+// Event related configuration.
 const char  beaconString[]   = "KI4OOK/FOX"; 
 const char  idString[]       = "DE KI4OOK"; 
+// Warble, siren, or something. 4 = quarter note, 8 = eighth note, etc.
+int melody[] = { NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6 };
+int noteDurations[] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
+// Dixie. 4 = quarter note, 8 = eighth note, etc.
+// int melody[] = { NOTE_G4, NOTE_E4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_F4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_E4 };
+// int noteDurations[] = { 8, 8, 4, 4, 8, 8, 8, 8, 4, 4, 4, 4 };
+
+
+
+// General configuration.
 const int   PIN_PTT         { 3 };          // Pin for Push to talk relay.
 const int   PIN_XMIT        { 2 };          // Send melody and CW out this pin to the mic of the transceiver.
 const int   CW_FREQ         { 700 };        // CW pitch.
@@ -238,13 +249,6 @@ char getDtmfChar() {
  * @brief Sends the fox hunt melody.
  */
 void playMelody() {
-    // Warble, siren, or something.
-    int melody[] = { NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6 };
-    int noteDurations[] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
-
-    // Dixie
-    // int melody[] = { NOTE_G4, NOTE_E4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_F4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_E4 };
-    // int noteDurations[] = { 8, 8, 4, 4, 8, 8, 8, 8, 4, 4, 4, 4 }; // 4 = quarter note, 8 = eighth note, etc.
     int noteCount = sizeof(melody)/sizeof(*melody);
 
     for (int thisNote = 0; thisNote < noteCount; thisNote++) {

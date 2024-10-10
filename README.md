@@ -67,6 +67,9 @@ the sleeve of the audio/speaker plug (blue wire) seems to clear that up. In this
 active and being monitored during the wait state looking for DTMF signals has a ground which is cool. Also, when 
 the PTT relay is engaged, it then also grounds the mic input which seems to clear up the transmitted audio.
 
+![FoxControllerPhoto](https://github.com/user-attachments/assets/0d64c581-cddb-4c83-a528-850d736533af)
+
+
 ---
 
 ## To Do

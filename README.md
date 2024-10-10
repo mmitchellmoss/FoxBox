@@ -53,6 +53,7 @@ Wire colors connected to the HT connector
 ---
 
 ## Schematic
+***Schematic Mistake*** I have the battery listed as being 5VDC. In practice, I use a LIPO battery, which is actually 7.2VDC (I think). Anything within the VIN spec of the Arduino Nano should be fine as the Nano supplies the 5VDC that is used by the rest of the circuitry. 
 
 ![Fox Box Schematic](https://github.com/user-attachments/assets/09bdead5-9cca-448e-bb17-bf2da77564a9)
 

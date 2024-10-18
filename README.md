@@ -95,4 +95,3 @@ the PTT relay is engaged, it then also grounds the mic input which seems to clea
     at a time. I could possibly add it back by including a SPDT switch that sends the audio either to the
     speaker or to the mic in on the HT, thus bypassing the Arduino entirely.
 * Fix the schematic to show that the battery voltage is actually greater than 5V.
-* Add photos and a description of the overal build as a whole.

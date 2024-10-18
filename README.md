@@ -1,6 +1,10 @@
 # FoxBox
 Controller for a "fox" radio transmitter.
 
+I built the FoxBox into a watertight plastic pistol magazine travel case, mainly because I was given one for free. It did work out nicely though as the foam inserts could be modified to easily fit the components. Many people use a metal ammo can for this purpose and more or less toss the components inside. This works well as it is also waterproof and has extra storage room for manuals or the like.
+
+On my design, the radio is a cheap HT connected to a thru mount NMO connector. I went with this connector for its waterproofness, which was not really necessary. Do be aware that these type of mounts really expect to have a ground plane, normally the roof of a vehicle, which this plastic box does not provide. A metal ammo can may provide a bit of one. In practice, I'm not sure how much difference it makes, although I have the feeling that it does matter. Note that you can find NMO mount antennas that do not require a ground plane. I used this tiny little antenna simply for convenience, though I don't honestly think that it is a very good choice unless you are only hunting in a city park or something.
+
 ![Outside](https://github.com/user-attachments/assets/ff5f8806-a57f-4f8e-bb65-aaeaa3189fdb)
 
 ![Inside](https://github.com/user-attachments/assets/3af6165f-873a-48f8-8b4a-2002d4259cf4)

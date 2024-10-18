@@ -1,6 +1,10 @@
 # FoxBox
 Controller for a "fox" radio transmitter.
 
+![Outside](https://github.com/user-attachments/assets/ff5f8806-a57f-4f8e-bb65-aaeaa3189fdb)
+
+![Inside](https://github.com/user-attachments/assets/3af6165f-873a-48f8-8b4a-2002d4259cf4)
+
 ---
 
 ## Usage

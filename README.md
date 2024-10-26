@@ -11,6 +11,13 @@ On my design, the radio is a cheap HT connected to a thru mount NMO connector. I
 
 ---
 
+## Code
+The software project is based on PlatformIO using the Ardunio platform. You can create a new PlatformIO project and git clone the project into it.
+The platformio.ini file should have everything that is needed to make this work from a configuration standpoint, such as defining the Arduino Nano board.
+Note that it also has two lib_deps enteries that point to two other classes of mine which provide objects for switches and timers.
+
+---
+
 ## Usage
 See [OPERATING.md](OPERATING.md) for Operating Instructions
 

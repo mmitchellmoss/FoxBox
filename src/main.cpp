@@ -40,7 +40,7 @@ void ledAck();
 
 
 // Event related configuration.
-const char  beaconString[]   = "KI4OOK/FOX"; 
+const char  beaconString[]   = "KI4OOK/FOX DE KI4OOK/FOX"; 
 const char  idString[]       = "DE KI4OOK"; 
 // Warble, siren, or something. 4 = quarter note, 8 = eighth note, etc.
 int melody[] = { NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6, NOTE_D6, NOTE_DS6, NOTE_D6, NOTE_E6 };
@@ -69,7 +69,7 @@ DTMF        dtmf(dtmfBlockSize, dtmfSampleRate);
 // Transmission related.
 bool        beaconEnabled   { false };      // Keeps track of whether the beacon is enabled or not.
 const int   dotDuration     { 60 };         // Length of time for one dot. Basic unit of measurement. 
-const unsigned long xmitInterval { 60 * 1000UL };  // Length of time between beacon intervals.
+const unsigned long xmitInterval { 30 * 1000UL };  // Length of time between beacon intervals.
 M3::Timer   timerBeacon(M3::Timer::COUNT_DOWN);
 
 // LED configuration.
